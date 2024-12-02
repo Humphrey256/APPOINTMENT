@@ -21,7 +21,7 @@ function DoctorList() {
                 }
 
                 const data = await response.json();
-                setDoctors(data.data); // Assuming the response is an object with a 'data' property that contains an array of doctors
+                setDoctors(data.data); // Assuming response.data contains an array of doctors
             } catch (error) {
                 setError('Error fetching doctors');
                 console.error('Error fetching doctors:', error);
@@ -47,10 +47,17 @@ function DoctorList() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 lg:gap-[30px] mt-[30px] lg:mt-[55px]">
             {doctors.length > 0 ? (
                 doctors.map((doctor) => (
-                    <DoctorCard key={doctor._id} doctor={doctor} />
+                    <div key={doctor._id} className="flex flex-col items-center space-y-2">
+                        <img
+                            src={`http://localhost:5000/${doctor.photo}`} // Ensure this path is correct
+                            alt={doctor.name}
+                            className="w-24 h-24 rounded-full object-cover"
+                        />
+                        <DoctorCard doctor={doctor} /> {/* Pass doctor data to the DoctorCard component */}
+                    </div>
                 ))
             ) : (
-                <div>No doctors available</div>
+                <div>No doctors available</div> // Display message when no doctors are found
             )}
         </div>
     );
