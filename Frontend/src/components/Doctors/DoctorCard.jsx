@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { BsArrowRight } from 'react-icons/bs';
 
@@ -10,17 +10,23 @@ function DoctorCard({ doctor }) {
         totalRating,
         totalPatients,
         hospital,
-        photo, // Destructuring photo from doctor
+        photo,
     } = doctor;
 
     return (
         <div className="p-3 lg:p-5">
             <div className="flex justify-center mb-4">
-                <img
-                    src={`http://localhost:5000/${photo}`} // Using the destructured photo variable
-                    alt={name}
-                    className="w-24 h-24 rounded-full object-cover"
-                />
+                {photo ? (
+                    <img
+                        src={`http://localhost:5000/${photo}`}
+                        alt={name}
+                        className="w-24 h-24 rounded-full object-cover"
+                    />
+                ) : (
+                    <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span className="text-white">No Image</span>
+                    </div>
+                )}
             </div>
 
             <h2 className="text-[18px] leading-[30px] lg:text-[26px] lg:leading-9 text-headingColor font-[700] mt-3 lg:mt-5">
@@ -62,7 +68,6 @@ function DoctorCard({ doctor }) {
     );
 }
 
-// PropTypes validation for the doctor prop
 DoctorCard.propTypes = {
     doctor: PropTypes.shape({
         name: PropTypes.string.isRequired,
@@ -71,7 +76,7 @@ DoctorCard.propTypes = {
         totalRating: PropTypes.number.isRequired,
         totalPatients: PropTypes.number.isRequired,
         hospital: PropTypes.string.isRequired,
-        photo: PropTypes.string.isRequired, // Adding photo validation
+        photo: PropTypes.string, // Make photo optional
     }).isRequired,
 };
 
