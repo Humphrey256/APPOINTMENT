@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react'; 
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import userImg from '../../assets/images/avatar.png';
@@ -15,7 +15,8 @@ const Header = () => {
     const headerRef = useRef(null);
     const menuRef = useRef(null);
     const [isScrolled, setIsScrolled] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false); // Track login state
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);  // State to track menu toggle
     const navigate = useNavigate();
 
     const handleStickyHeader = () => {
@@ -33,20 +34,23 @@ const Header = () => {
         return () => window.removeEventListener('scroll', handleStickyHeader);
     }, []);
 
-    const toggleMenu = () => menuRef.current.classList.toggle('show__menu');
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen); // Toggle menu state
+        menuRef.current.classList.toggle('show__menu');
+    };
 
-    // Simulate checking if the user is logged in (e.g., from a token or session)
+    // Simulate checking if the user is logged in
     useEffect(() => {
-        const user = localStorage.getItem('user'); // You can replace this with your actual logic
+        const user = localStorage.getItem('user');
         if (user) {
             setIsAuthenticated(true);
         }
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('user'); // Clear user data
-        setIsAuthenticated(false); // Update login state
-        navigate('/home'); // Redirect to home page
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+        navigate('/home');
     };
 
     return (
@@ -54,8 +58,8 @@ const Header = () => {
             className="header flex items-center"
             ref={headerRef}
             style={{
-                backgroundColor: '#1e3a8a', // Blue background
-                height: '80px', // Header height
+                backgroundColor: '#1e3a8a',
+                height: '80px',
                 display: 'flex',
                 alignItems: 'center',
                 position: 'sticky',
@@ -66,12 +70,11 @@ const Header = () => {
             <div className="container">
                 <div className="flex items-center justify-between">
                     <div>
-                        {/* Logo with height matching the header */}
                         <img
                             src={logo}
                             alt="Logo"
                             style={{
-                                height: '80px', // Match the header height
+                                height: '80px',
                                 objectFit: 'contain',
                             }}
                         />
@@ -82,7 +85,7 @@ const Header = () => {
                                 <li key={index}>
                                     <NavLink
                                         to={link.path}
-                                        className={`${isScrolled ? 'nav__link-scrolled' : 'nav__link-initial'} text-[16px] leading-7 font-[500] hover:text-primaryColor`}
+                                        className={`${isScrolled ? 'nav__link-scrolled' : 'nav__link-initial'} text-[16px] leading-7 font-[500] hover:text-primaryColor ${isMenuOpen ? 'text-black' : ''}`}  // Conditionally change text color
                                     >
                                         {link.display}
                                     </NavLink>
