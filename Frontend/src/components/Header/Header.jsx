@@ -14,21 +14,43 @@ const navLinks = [
 const Header = () => {
     const headerRef = useRef(null);
     const menuRef = useRef(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false); // Track login state
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);  // State to track menu toggle
     const navigate = useNavigate();
 
+    const handleStickyHeader = () => {
+        if (window.scrollY > 80) {
+            headerRef.current.classList.add('sticky__header');
+            setIsScrolled(true);
+        } else {
+            headerRef.current.classList.remove('sticky__header');
+            setIsScrolled(false);
+        }
+    };
+
     useEffect(() => {
-        // Check if the user is logged in when the component mounts
-        const token = localStorage.getItem('token'); // Replace 'token' with your actual key
-        if (token) {
+        window.addEventListener('scroll', handleStickyHeader);
+        return () => window.removeEventListener('scroll', handleStickyHeader);
+    }, []);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen); // Toggle menu state
+        menuRef.current.classList.toggle('show__menu');
+    };
+
+    // Simulate checking if the user is logged in
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        if (user) {
             setIsAuthenticated(true);
         }
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Clear token or session data
-        setIsAuthenticated(false); // Update authentication state
-        navigate('/home'); // Redirect to home page
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+        navigate('/home');
     };
 
     return (
@@ -36,8 +58,8 @@ const Header = () => {
             className="header flex items-center"
             ref={headerRef}
             style={{
-                backgroundColor: '#1e3a8a', // Blue background
-                height: '80px', // Header height
+                backgroundColor: '#1e3a8a',
+                height: '80px',
                 display: 'flex',
                 alignItems: 'center',
                 position: 'sticky',
@@ -48,23 +70,22 @@ const Header = () => {
             <div className="container">
                 <div className="flex items-center justify-between">
                     <div>
-                        {/* Logo */}
                         <img
                             src={logo}
                             alt="Logo"
                             style={{
-                                height: '80px', // Match the header height
+                                height: '80px',
                                 objectFit: 'contain',
                             }}
                         />
                     </div>
-                    <div className="navigation" ref={menuRef}>
+                    <div className="navigation" ref={menuRef} onClick={toggleMenu}>
                         <ul className="menu flex items-center gap-[2.7rem]">
                             {navLinks.map((link, index) => (
                                 <li key={index}>
                                     <NavLink
                                         to={link.path}
-                                        className="text-[16px] leading-7 font-[500] hover:text-primaryColor"
+                                        className={`${isScrolled ? 'nav__link-scrolled' : 'nav__link-initial'} text-[16px] leading-7 font-[500] hover:text-primaryColor ${isMenuOpen ? 'text-black' : ''}`}  // Conditionally change text color
                                     >
                                         {link.display}
                                     </NavLink>
@@ -73,21 +94,32 @@ const Header = () => {
                         </ul>
                     </div>
                     <div className="flex items-center gap-4">
-                        {isAuthenticated ? (
+                        <div className="hidden">
+                            <Link to="/">
+                                <figure className="w-[35px] h-[35px] rounded-full cursor-pointer">
+                                    <img
+                                        src={userImg}
+                                        className="w-full rounded-full"
+                                        alt="User Avatar"
+                                    />
+                                </figure>
+                            </Link>
+                        </div>
+                        {!isAuthenticated ? (
+                            <Link to="/login">
+                                <button className="bg-primaryColor py-2 px-6 text-white font-[600] h-[44px] flex items-center justify-center rounded-[50px]">
+                                    Login
+                                </button>
+                            </Link>
+                        ) : (
                             <button
                                 onClick={handleLogout}
                                 className="bg-primaryColor py-2 px-6 text-white font-[600] h-[44px] flex items-center justify-center rounded-[50px]"
                             >
                                 Logout
                             </button>
-                        ) : (
-                            <Link to="/login">
-                                <button className="bg-primaryColor py-2 px-6 text-white font-[600] h-[44px] flex items-center justify-center rounded-[50px]">
-                                    Login
-                                </button>
-                            </Link>
                         )}
-                        <span className="md:hidden" onClick={() => menuRef.current.classList.toggle('show__menu')}>
+                        <span className="md:hidden" onClick={toggleMenu}>
                             <BiMenu className="w-6 h-6 cursor-pointer" />
                         </span>
                     </div>
