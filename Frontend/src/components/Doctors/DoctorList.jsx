@@ -21,7 +21,11 @@ function DoctorList() {
                 }
 
                 const data = await response.json();
-                setDoctors(data.data); // Assuming response.data contains an array of doctors
+
+                // Remove duplicate doctors based on 'name'
+                const uniqueDoctors = Array.from(new Map(data.data.map(doctor => [doctor.name, doctor])).values());
+
+                setDoctors(uniqueDoctors);
             } catch (error) {
                 setError('Error fetching doctors');
                 console.error('Error fetching doctors:', error);
@@ -47,14 +51,7 @@ function DoctorList() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 lg:gap-[30px] mt-[30px] lg:mt-[55px]">
             {doctors.length > 0 ? (
                 doctors.map((doctor) => (
-                    <div key={doctor._id} className="flex flex-col items-center space-y-2">
-                        <img
-                            src={`http://localhost:5000/${doctor.photo}`} // Ensure this path is correct
-                            alt={doctor.name}
-                            className="w-24 h-24 rounded-full object-cover"
-                        />
-                        <DoctorCard doctor={doctor} /> {/* Pass doctor data to the DoctorCard component */}
-                    </div>
+                    <DoctorCard key={doctor._id} doctor={doctor} /> // Pass doctor data to DoctorCard
                 ))
             ) : (
                 <div>No doctors available</div> // Display message when no doctors are found

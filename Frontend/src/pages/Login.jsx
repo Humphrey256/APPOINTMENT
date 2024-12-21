@@ -20,7 +20,6 @@ const Login = () => {
 
         const { email, password } = formData;
 
-        // Validate email format
         if (!/\S+@\S+\.\S+/.test(email)) {
             toast.error("Invalid email format.");
             return;
@@ -38,25 +37,23 @@ const Login = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Log the successful response
                 console.log("Login Response:", data);
 
-                // Store user details and token expiry
+                // Store user details
                 localStorage.setItem('userId', data.userId);
-                const expiryTime = Date.now() + 60 * 60 * 1000; // 1 hour in milliseconds
-                localStorage.setItem('tokenExpiry', expiryTime);
+                localStorage.setItem('tokenExpiry', Date.now() + 60 * 60 * 1000); // 1 hour
 
                 // Role-based navigation
-                if (data.role === 'doctor') {
-                    localStorage.setItem('doctorId', data.userId);
-                    toast.success('You have Successfully logged in!');
-                    setTimeout(() => navigate('/doctordashboard'), 1500);
-                } else if (data.role === 'patient') {
-                    toast.success('You have Successfully logged in!');
-                    setTimeout(() => navigate('/patientdashboard'), 1500);
-                } else if (data.role === 'admin') {
-                    toast.success('Successfully logged Admin!');
-                    setTimeout(() => navigate('/admindashboard'), 1500);
+                const dashboardRoutes = {
+                    doctor: '/doctordashboard',
+                    patient: '/patientdashboard',
+                    admin: '/admindashboard',
+                };
+
+                const route = dashboardRoutes[data.role];
+                if (route) {
+                    toast.success(`Welcome, ${data.role}!`);
+                    setTimeout(() => navigate(route), 1500);
                 } else {
                     toast.warning("Unknown role. Redirecting to home.");
                     navigate('/');

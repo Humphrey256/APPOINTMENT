@@ -76,7 +76,7 @@ DoctorCard.propTypes = {
         totalRating: PropTypes.number.isRequired,
         totalPatients: PropTypes.number.isRequired,
         hospital: PropTypes.string.isRequired,
-        photo: PropTypes.string, // Make photo optional
+        photo: PropTypes.string, // Optional
     }).isRequired,
 };
 
