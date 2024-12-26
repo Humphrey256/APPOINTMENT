@@ -39,8 +39,12 @@ const Login = () => {
             if (response.ok) {
                 console.log("Login Response:", data);
 
-                // Store user details
-                localStorage.setItem('userId', data.userId);
+                // Store the user ID and role appropriately
+                if (data.role === 'patient') {
+                    localStorage.setItem('patientId', data.userId);
+                } else {
+                    localStorage.setItem('userId', data.userId);
+                }
                 localStorage.setItem('tokenExpiry', Date.now() + 60 * 60 * 1000); // 1 hour
 
                 // Role-based navigation
